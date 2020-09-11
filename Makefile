@@ -2,8 +2,9 @@
 
 EXE=app
 ZIP_FILE=app.zip
+AWS_PROFILE ?= default
 FUNC_NAME ?= my-function
-IAM ?= 123456789012
+IAM ?= IAM-is-not-defined
 ROLE_NAME ?= lambda_basic_execution
 ROLE_ARN ?= arn:aws:iam::$(IAM):role/$(ROLE_NAME)
 
@@ -19,19 +20,28 @@ clean:
 zip:
 	@zip $(ZIP_FILE) $(EXE)
 
-create-func: build-linux zip
+create-function: build-linux zip
 	@aws lambda create-function \
+	--profile $(AWS_PROFILE) \
 	--function-name $(FUNC_NAME) \
 	--runtime go1.x \
 	--zip-file fileb://$(ZIP_FILE) \
 	--handler $(EXE) \
 	--role $(ROLE_ARN)
 
-logs:
+invoke:
 	@aws lambda invoke \
+	--profile $(AWS_PROFILE) \
 	--function-name $(FUNC_NAME) \
+	--payload '{"key1":"v1", "key2":"v2", "key3":"v3"}' \
 	out \
 	--log-type Tail \
 	--query 'LogResult' \
 	--output text \
 	| base64 -d
+	@rm -f out
+
+delete-function:
+	@aws lambda delete-function \
+	--function-name $(FUNC_NAME) \
+	--profile $(AWS_PROFILE)

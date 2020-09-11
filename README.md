@@ -2,7 +2,7 @@
 
 ## Requirements
 * go 1.11+
-* [aws-cli](https://docs.aws.amazon.com/ko_kr/cli/latest/userguide/cli-chap-install.html) (선택사항)
+* [aws-cli](https://docs.aws.amazon.com/ko_kr/cli/latest/userguide/cli-chap-install.html)
 * make (optional)
 
 ## Setup
@@ -17,13 +17,19 @@ $ make build-linux
 $ make zip
 
 # use AWS CLI to create a function
-$ ROLE_ARN={your role ARN} FUNC_NAME={your function name} make create-function
+$ ROLE_ARN={your role ARN} \
+  FUNC_NAME={your function name} \
+  make create-function
 
-# get logs for an invocation
-$ make logs
+# synchronous invocation 
+$ make invoke
 
 # clean output
 $ make clean
+
+# delete lambda function
+$ FUNC_NAME={your function name} \
+  make delete-function
 ```
 
 1. [Define a role](https://console.aws.amazon.com/iam/home#/roles) with `AWSLambdaBasicExecutionRole` policy. 
